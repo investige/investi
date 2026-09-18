@@ -15,8 +15,12 @@ export default function Header() {
           <a href="/news" className="hover:text-white">
             სიახლეები
           </a>
+                            <a href="/quiz" className="hover:text-white">
+      იცი?
+          </a>
         </nav>
       </div>
     </header>
-  );
-}
+  
+);
+}  
