@@ -5,7 +5,7 @@ export default function Header() {
         <a href="/" className="font-bold text-lg tracking-wide">
           ინვესტორი
         </a>
-        <nav className="flex gap-6 text-sm text-purple-200">
+                <nav className="flex gap-6 text-sm text-purple-200">
           <a href="/" className="hover:text-white">
             მთავარი
           </a>
@@ -17,6 +17,9 @@ export default function Header() {
           </a>
                             <a href="/quiz" className="hover:text-white">
       იცი?
+          </a>
+                    <a href="/login" className="hover:text-white">
+            შესვლა
           </a>
         </nav>
       </div>
