@@ -19,7 +19,11 @@ export default function LoginPage() {
       email,
       password,
     });
-    setMessage(error ? error.message : "შესვლა მოხერხდა");
+        if (error) {
+      setMessage(error.message);
+    } else {
+      window.location.href = "/";
+    }
   }
 
   return (
