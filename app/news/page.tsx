@@ -14,6 +14,7 @@ export default function NewsPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [voted, setVoted] = useState<Set<string>>(new Set());
+  const [usernames, setUsernames] = useState<Record<string, string>>({});
 
   async function loadPosts(activeFilter: Category | "ყველა") {
     const supabase = createClient();
@@ -34,8 +35,23 @@ export default function NewsPage() {
     if (ids.length === 0) {
       setCounts({});
       setVoted(new Set());
+      setUsernames({});
       return;
     }
+
+    const authorIds = Array.from(new Set(list.map((post) => post.author_id)));
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("user_id, username")
+      .in("user_id", authorIds);
+    setUsernames(
+      Object.fromEntries(
+        (profiles || []).map((p: { user_id: string; username: string }) => [
+          p.user_id,
+          p.username,
+        ])
+      )
+    );
 
     const { data: countRows } = await supabase.rpc("get_post_vote_counts", {
       post_ids: ids,
@@ -123,6 +139,7 @@ export default function NewsPage() {
             voted={voted.has(post.id)}
             loggedIn={loggedIn}
             shareUrl={`/news/${post.id}`}
+            authorUsername={usernames[post.author_id]}
           />
         ))}
         {posts.length === 0 && (

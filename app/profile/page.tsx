@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "../lib/supabase/server";
 import ChangePasswordForm from "./ChangePasswordForm";
+import UsernameForm from "./UsernameForm";
 
 export default async function ProfilePage({
   searchParams,
@@ -23,6 +24,7 @@ export default async function ProfilePage({
     { data: attempts },
     { count: postVotes },
     { count: quizVotes },
+    { data: profile },
   ] = await Promise.all([
     supabase
       .from("watchlist")
@@ -35,6 +37,11 @@ export default async function ProfilePage({
       .limit(10),
     supabase.from("post_votes").select("*", { count: "exact", head: true }),
     supabase.from("quiz_votes").select("*", { count: "exact", head: true }),
+    supabase
+      .from("profiles")
+      .select("username")
+      .eq("user_id", user.id)
+      .maybeSingle(),
   ]);
 
   const totalUpvotes = (postVotes ?? 0) + (quizVotes ?? 0);
@@ -55,6 +62,11 @@ export default async function ProfilePage({
       <p className="text-purple-300 text-sm mb-8">
         მიცემული Up: {totalUpvotes}
       </p>
+
+      <UsernameForm
+        userId={user.id}
+        initialUsername={profile?.username ?? ""}
+      />
 
       <section className="mb-10 rounded-xl border border-purple-800/70 p-5">
         <h2 className="text-xl font-bold mb-4">საყურებელი სია</h2>

@@ -10,12 +10,14 @@ export default function PostView({
   voteCount,
   voted,
   loggedIn,
+  authorUsername,
 }: {
   post: Post;
   canManage: boolean;
   voteCount: number;
   voted: boolean;
   loggedIn: boolean;
+  authorUsername?: string;
 }) {
   const router = useRouter();
 
@@ -28,6 +30,7 @@ export default function PostView({
       voted={voted}
       loggedIn={loggedIn}
       shareUrl={`/news/${post.id}`}
+      authorUsername={authorUsername}
     />
   );
 }

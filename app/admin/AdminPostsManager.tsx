@@ -6,8 +6,26 @@ import { type Post } from "../news/types";
 import PostCard from "../news/PostCard";
 import PostComposer from "../news/PostComposer";
 
+async function fetchUsernames(
+  authorIds: string[]
+): Promise<Record<string, string>> {
+  if (authorIds.length === 0) return {};
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("profiles")
+    .select("user_id, username")
+    .in("user_id", Array.from(new Set(authorIds)));
+  return Object.fromEntries(
+    (data || []).map((p: { user_id: string; username: string }) => [
+      p.user_id,
+      p.username,
+    ])
+  );
+}
+
 export default function AdminPostsManager() {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [usernames, setUsernames] = useState<Record<string, string>>({});
 
   async function loadPosts() {
     const supabase = createClient();
@@ -15,7 +33,9 @@ export default function AdminPostsManager() {
       .from("posts")
       .select("id, title, body, category, thumbnail_url, author_id, created_at")
       .order("created_at", { ascending: false });
-    setPosts(data || []);
+    const list = data || [];
+    setPosts(list);
+    setUsernames(await fetchUsernames(list.map((p) => p.author_id)));
   }
 
   useEffect(() => {
@@ -24,8 +44,11 @@ export default function AdminPostsManager() {
       .from("posts")
       .select("id, title, body, category, thumbnail_url, author_id, created_at")
       .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        if (!ignore) setPosts(data || []);
+      .then(async ({ data }) => {
+        if (ignore) return;
+        const list = data || [];
+        setPosts(list);
+        setUsernames(await fetchUsernames(list.map((p) => p.author_id)));
       });
     return () => {
       ignore = true;
@@ -39,7 +62,13 @@ export default function AdminPostsManager() {
       <h2 className="text-xl font-bold mb-4">ყველა პოსტი</h2>
       <div className="space-y-6">
         {posts.map((post) => (
-          <PostCard key={post.id} post={post} canManage onChanged={loadPosts} />
+          <PostCard
+            key={post.id}
+            post={post}
+            canManage
+            onChanged={loadPosts}
+            authorUsername={usernames[post.author_id]}
+          />
         ))}
         {posts.length === 0 && (
           <p className="text-purple-300">პოსტები ჯერ არ არის.</p>
