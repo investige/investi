@@ -13,7 +13,9 @@ export default async function Home() {
 
   const { data: postsData } = await supabase
     .from("posts")
-    .select("id, title, body, category, thumbnail_url, author_id, created_at")
+    .select(
+      "id, title, body, category, thumbnail_url, content_blocks, author_id, created_at"
+    )
     .order("created_at", { ascending: false })
     .limit(FEED_LIMIT);
 

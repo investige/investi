@@ -8,7 +8,9 @@ async function getPost(id: string) {
   const supabase = await createClient();
   const { data: post } = await supabase
     .from("posts")
-    .select("id, title, body, category, thumbnail_url, author_id, created_at")
+    .select(
+      "id, title, body, category, thumbnail_url, content_blocks, author_id, created_at"
+    )
     .eq("id", id)
     .maybeSingle();
   return post;

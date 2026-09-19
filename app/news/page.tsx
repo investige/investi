@@ -20,7 +20,9 @@ export default function NewsPage() {
     const supabase = createClient();
     let query = supabase
       .from("posts")
-      .select("id, title, body, category, thumbnail_url, author_id, created_at")
+      .select(
+        "id, title, body, category, thumbnail_url, content_blocks, author_id, created_at"
+      )
       .order("created_at", { ascending: false });
 
     if (activeFilter !== "ყველა") {

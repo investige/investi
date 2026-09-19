@@ -3,9 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "../lib/supabase/client";
-import { CATEGORIES, type Category, type Post } from "./types";
+import { CATEGORIES, type Category, type Post, type PostBlock } from "./types";
 import UpvoteButton from "../components/UpvoteButton";
 import ShareButtons from "../components/ShareButtons";
+import PostBlockEditor from "./PostBlockEditor";
+import PostBlocksView from "./PostBlocksView";
 
 export default function PostCard({
   post,
@@ -28,12 +30,22 @@ export default function PostCard({
 }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(post.title);
-  const [body, setBody] = useState(post.body);
+  const [blocks, setBlocks] = useState<PostBlock[]>(
+    post.content_blocks && post.content_blocks.length > 0
+      ? post.content_blocks
+      : [{ type: "text", text: post.body }]
+  );
   const [category, setCategory] = useState<Category>(post.category);
   const [message, setMessage] = useState("");
 
   async function save() {
-    if (!title.trim() || !body.trim()) {
+    const body = blocks
+      .filter((block): block is { type: "text"; text: string } => block.type === "text")
+      .map((block) => block.text.trim())
+      .filter(Boolean)
+      .join("\n\n");
+
+    if (!title.trim() || !body) {
       setMessage("სათაური და ტექსტი უნდა");
       return;
     }
@@ -41,7 +53,7 @@ export default function PostCard({
     const supabase = createClient();
     const { error } = await supabase
       .from("posts")
-      .update({ title: title.trim(), body: body.trim(), category })
+      .update({ title: title.trim(), body, content_blocks: blocks, category })
       .eq("id", post.id);
 
     if (error) {
@@ -80,10 +92,10 @@ export default function PostCard({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        <textarea
-          className="w-full mb-3 rounded-lg px-3 py-2 bg-white text-black min-h-32"
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
+        <PostBlockEditor
+          blocks={blocks}
+          onChange={setBlocks}
+          authorId={post.author_id}
         />
         <div className="flex gap-2">
           <button
@@ -159,12 +171,12 @@ export default function PostCard({
           <h2 className="text-xl font-bold mb-2 hover:underline">
             {post.title}
           </h2>
-          <p className="whitespace-pre-wrap text-purple-100">{post.body}</p>
+          <PostBlocksView body={post.body} blocks={post.content_blocks} />
         </Link>
       ) : (
         <>
           <h2 className="text-xl font-bold mb-2">{post.title}</h2>
-          <p className="whitespace-pre-wrap text-purple-100">{post.body}</p>
+          <PostBlocksView body={post.body} blocks={post.content_blocks} />
         </>
       )}
 
