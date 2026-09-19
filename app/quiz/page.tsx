@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createClient } from "../lib/supabase/client";
 
 const questions = [
   {
@@ -56,15 +57,31 @@ export default function QuizPage() {
   const [done, setDone] = useState(false);
 
   function choose(index: number) {
+    const finalScore =
+      index === questions[step].answer ? score + 1 : score;
+
     if (index === questions[step].answer) {
-      setScore(score + 1);
+      setScore(finalScore);
     }
 
     if (step + 1 === questions.length) {
       setDone(true);
+      saveAttempt(finalScore);
     } else {
       setStep(step + 1);
     }
+  }
+
+  async function saveAttempt(finalScore: number) {
+    const supabase = createClient();
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) return;
+
+    await supabase.from("quiz_attempts").insert({
+      user_id: data.user.id,
+      score: finalScore,
+      total: questions.length,
+    });
   }
 
   if (done) {
