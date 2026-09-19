@@ -2,23 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "../lib/supabase/client";
-
-const CATEGORIES = [
-  "ზოგადი",
-  "ბაზრის სიახლეები",
-  "განათლება",
-  "ანალიზი",
-] as const;
-
-type Category = (typeof CATEGORIES)[number];
-
-type Post = {
-  id: string;
-  title: string;
-  body: string;
-  category: Category;
-  created_at: string;
-};
+import { CATEGORIES, type Category, type Post } from "./types";
+import PostCard from "./PostCard";
 
 export default function NewsPage() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -152,17 +137,12 @@ export default function NewsPage() {
 
       <div className="space-y-6">
         {posts.map((post) => (
-          <article
+          <PostCard
             key={post.id}
-            className="rounded-xl border border-purple-800/70 p-5"
-          >
-            <span className="inline-block mb-2 rounded-full bg-purple-950/60 px-3 py-1 text-xs text-purple-200">
-              {post.category}
-            </span>
-            <h2 className="text-xl font-bold mb-2">{post.title}</h2>
-            <p className="whitespace-pre-wrap text-purple-100">{post.body}</p>
-            <p className="mt-3 text-sm text-purple-300">ინვესტორი</p>
-          </article>
+            post={post}
+            isAdmin={loggedIn && isAdmin}
+            onChanged={() => loadPosts(filter)}
+          />
         ))}
         {posts.length === 0 && (
           <p className="text-purple-300">პოსტები ჯერ არ არის.</p>
