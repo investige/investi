@@ -12,7 +12,12 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const [{ data: watchlist }, { data: attempts }] = await Promise.all([
+  const [
+    { data: watchlist },
+    { data: attempts },
+    { count: postVotes },
+    { count: quizVotes },
+  ] = await Promise.all([
     supabase
       .from("watchlist")
       .select("symbol")
@@ -22,7 +27,11 @@ export default async function ProfilePage() {
       .select("score, total, created_at")
       .order("created_at", { ascending: false })
       .limit(10),
+    supabase.from("post_votes").select("*", { count: "exact", head: true }),
+    supabase.from("quiz_votes").select("*", { count: "exact", head: true }),
   ]);
+
+  const totalUpvotes = (postVotes ?? 0) + (quizVotes ?? 0);
 
   const bestAttempt = (attempts || []).reduce<
     { score: number; total: number } | null
@@ -36,7 +45,10 @@ export default async function ProfilePage() {
   return (
     <main className="max-w-2xl mx-auto px-6 py-16">
       <h1 className="text-3xl font-bold mb-2">პროფილი</h1>
-      <p className="text-purple-200 mb-8">{user.email}</p>
+      <p className="text-purple-200 mb-1">{user.email}</p>
+      <p className="text-purple-300 text-sm mb-8">
+        მიცემული Up: {totalUpvotes}
+      </p>
 
       <section className="mb-10 rounded-xl border border-purple-800/70 p-5">
         <h2 className="text-xl font-bold mb-4">საყურებელი სია</h2>
