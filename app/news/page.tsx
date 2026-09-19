@@ -122,6 +122,7 @@ export default function NewsPage() {
             voteCount={counts[post.id] ?? 0}
             voted={voted.has(post.id)}
             loggedIn={loggedIn}
+            shareUrl={`/news/${post.id}`}
           />
         ))}
         {posts.length === 0 && (

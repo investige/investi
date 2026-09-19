@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "../lib/supabase/client";
 import { CATEGORIES, type Category, type Post } from "./types";
 import UpvoteButton from "../components/UpvoteButton";
+import ShareButtons from "../components/ShareButtons";
 
 export default function PostCard({
   post,
@@ -12,6 +13,7 @@ export default function PostCard({
   voteCount,
   voted,
   loggedIn,
+  shareUrl,
 }: {
   post: Post;
   canManage: boolean;
@@ -19,6 +21,7 @@ export default function PostCard({
   voteCount?: number;
   voted?: boolean;
   loggedIn?: boolean;
+  shareUrl?: string;
 }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(post.title);
@@ -140,6 +143,12 @@ export default function PostCard({
       </div>
       <h2 className="text-xl font-bold mb-2">{post.title}</h2>
       <p className="whitespace-pre-wrap text-purple-100">{post.body}</p>
+
+      {shareUrl && (
+        <div className="mt-4">
+          <ShareButtons path={shareUrl} title={post.title} />
+        </div>
+      )}
 
       {voteCount !== undefined && (
         <div className="absolute top-5 right-5">

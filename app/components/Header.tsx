@@ -54,9 +54,9 @@ export default function Header() {
           <a href="/stocks" className="hover:text-white">
             სტოკები
           </a>
-          <a href="/news" className="hover:text-white">
+          <Link href="/news" className="hover:text-white">
             სიახლეები
-          </a>
+          </Link>
           <Link href="/quiz" className="hover:text-white">
             იცი
           </Link>
