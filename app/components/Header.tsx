@@ -65,9 +65,14 @@ export default function Header() {
             </a>
           )}
           {email ? (
-            <button onClick={signOut} className="hover:text-white">
-              გასვლა
-            </button>
+            <>
+              <a href="/profile" className="hover:text-white">
+                პროფილი
+              </a>
+              <button onClick={signOut} className="hover:text-white">
+                გასვლა
+              </button>
+            </>
           ) : (
             <a href="/login" className="hover:text-white">
               შესვლა
