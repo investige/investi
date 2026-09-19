@@ -3,10 +3,22 @@
 import { useEffect, useState } from "react";
 import { createClient } from "../lib/supabase/client";
 
+const PENDING_PASSWORD_KEY = "investi-pending-password";
+
+function takePendingPassword(): string {
+  try {
+    const value = localStorage.getItem(PENDING_PASSWORD_KEY);
+    if (value) localStorage.removeItem(PENDING_PASSWORD_KEY);
+    return value || "";
+  } catch {
+    return "";
+  }
+}
+
 export default function ResetPasswordPage() {
   const [ready, setReady] = useState(false);
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
+  const [password, setPassword] = useState(() => takePendingPassword());
+  const [confirm, setConfirm] = useState(password);
   const [message, setMessage] = useState("");
   const [done, setDone] = useState(false);
 

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "../lib/supabase/server";
+import ChangePasswordForm from "./ChangePasswordForm";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -107,6 +108,12 @@ export default async function ProfilePage() {
           </p>
         )}
       </section>
+
+      {user.email && (
+        <div className="mt-10">
+          <ChangePasswordForm email={user.email} />
+        </div>
+      )}
     </main>
   );
 }
