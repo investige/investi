@@ -12,5 +12,7 @@ export type Post = {
   title: string;
   body: string;
   category: Category;
+  thumbnail_url: string | null;
+  author_id: string;
   created_at: string;
 };
