@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "../lib/supabase";
+import { createClient } from "../lib/supabase/client";
 
 export default function Header() {
   const [email, setEmail] = useState<string | null>(null);
