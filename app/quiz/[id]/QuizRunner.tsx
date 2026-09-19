@@ -70,7 +70,7 @@ export default function QuizRunner({
           {score} / {questions.length}
         </p>
         <button
-          className="mt-8 rounded-lg bg-white text-[#2d1b4e] px-5 py-2 font-medium"
+          className="mt-8 rounded-lg bg-accent text-bg px-5 py-2 font-medium"
           onClick={() => {
             setStep(0);
             setScore(0);

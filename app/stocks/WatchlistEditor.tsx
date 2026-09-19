@@ -72,7 +72,7 @@ export default function WatchlistEditor({ symbols }: { symbols: string[] }) {
 
       <div className="flex gap-2">
         <input
-          className="flex-1 rounded-lg px-3 py-2 bg-white text-black"
+          className="flex-1 rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700"
           placeholder="ტიკერი, მაგ. TSLA"
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -81,7 +81,7 @@ export default function WatchlistEditor({ symbols }: { symbols: string[] }) {
           type="button"
           onClick={addSymbol}
           disabled={pending}
-          className="rounded-lg bg-white text-[#2d1b4e] px-4 py-2 disabled:opacity-50"
+          className="rounded-lg bg-accent text-bg px-4 py-2 disabled:opacity-50"
         >
           დამატება
         </button>

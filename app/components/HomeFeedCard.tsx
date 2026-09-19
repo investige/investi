@@ -19,7 +19,7 @@ export default function HomeFeedCard({
     post.body.length > 140 ? post.body.slice(0, 140).trim() + "…" : post.body;
 
   return (
-    <article className="relative rounded-xl border border-purple-800/70 overflow-hidden flex flex-col">
+    <article className="group relative rounded-xl border border-purple-800 bg-purple-900 overflow-hidden flex flex-col transition-colors hover:border-accent">
       <Link href={`/news/${post.id}`} className="flex flex-col flex-1">
         {post.thumbnail_url ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -29,13 +29,13 @@ export default function HomeFeedCard({
             className="w-full h-36 object-cover"
           />
         ) : (
-          <div className="w-full h-36 bg-purple-950/60" />
+          <div className="w-full h-36 bg-purple-950" />
         )}
         <div className="p-4 flex flex-col flex-1">
-          <span className="inline-block w-fit rounded-full bg-purple-950/60 px-3 py-1 text-xs text-purple-200 mb-2">
+          <span className="inline-block w-fit rounded-full bg-accent/15 px-3 py-1 text-xs text-accent mb-2">
             {post.category}
           </span>
-          <h3 className="font-bold mb-2 line-clamp-2 hover:underline">
+          <h3 className="font-semibold mb-2 line-clamp-2 group-hover:underline">
             {post.title}
           </h3>
           <p className="text-sm text-purple-200 line-clamp-3 flex-1">

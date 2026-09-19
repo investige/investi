@@ -110,7 +110,7 @@ export default function NewsPage() {
             className={
               "rounded-full px-3 py-1 text-sm " +
               (filter === option
-                ? "bg-white text-[#2d1b4e]"
+                ? "bg-accent text-bg"
                 : "bg-purple-950/60 text-purple-200 hover:bg-purple-900/60")
             }
           >

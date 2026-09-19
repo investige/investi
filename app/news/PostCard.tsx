@@ -77,7 +77,7 @@ export default function PostCard({
     return (
       <article className="rounded-xl border border-purple-800/70 p-5">
         <select
-          className="w-full mb-3 rounded-lg px-3 py-2 bg-white text-black"
+          className="w-full mb-3 rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700"
           value={category}
           onChange={(e) => setCategory(e.target.value as Category)}
         >
@@ -88,7 +88,7 @@ export default function PostCard({
           ))}
         </select>
         <input
-          className="w-full mb-3 rounded-lg px-3 py-2 bg-white text-black"
+          className="w-full mb-3 rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
@@ -101,7 +101,7 @@ export default function PostCard({
           <button
             type="button"
             onClick={save}
-            className="rounded-lg bg-white text-[#2d1b4e] px-4 py-2"
+            className="rounded-lg bg-accent text-bg px-4 py-2"
           >
             შენახვა
           </button>
@@ -121,7 +121,7 @@ export default function PostCard({
   return (
     <article
       className={
-        "relative rounded-xl border border-purple-800/70 p-5" +
+        "relative rounded-xl border border-purple-800 bg-purple-900 p-5" +
         (voteCount !== undefined ? " pr-20" : "")
       }
     >
@@ -144,7 +144,7 @@ export default function PostCard({
           />
         ))}
       <div className="flex items-start justify-between gap-3 mb-2">
-        <span className="inline-block rounded-full bg-purple-950/60 px-3 py-1 text-xs text-purple-200">
+        <span className="inline-block rounded-full bg-accent/15 px-3 py-1 text-xs text-accent">
           {post.category}
         </span>
         {canManage && (

@@ -100,7 +100,7 @@ export default function PostComposer({
       <h2 className="text-xl font-bold mb-4">{heading}</h2>
 
       <select
-        className="w-full mb-3 rounded-lg px-3 py-2 bg-white text-black"
+        className="w-full mb-3 rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700"
         value={category}
         onChange={(e) => setCategory(e.target.value as Category)}
       >
@@ -112,7 +112,7 @@ export default function PostComposer({
       </select>
 
       <input
-        className="w-full mb-3 rounded-lg px-3 py-2 bg-white text-black"
+        className="w-full mb-3 rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700"
         placeholder="სათაური"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -137,7 +137,7 @@ export default function PostComposer({
         type="button"
         onClick={publish}
         disabled={saving}
-        className="rounded-lg bg-white text-[#2d1b4e] px-4 py-2 disabled:opacity-50"
+        className="rounded-lg bg-accent text-bg px-4 py-2 disabled:opacity-50"
       >
         გამოქვეყნება
       </button>
