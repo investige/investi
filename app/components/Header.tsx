@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { createClient } from "../lib/supabase/client";
 
 export default function Header() {
@@ -56,9 +57,9 @@ export default function Header() {
           <a href="/news" className="hover:text-white">
             სიახლეები
           </a>
-          <a href="/quiz" className="hover:text-white">
+          <Link href="/quiz" className="hover:text-white">
             იცი
-          </a>
+          </Link>
           {isAdmin && (
             <a href="/admin" className="hover:text-white">
               ადმინი

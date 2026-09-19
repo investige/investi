@@ -1,128 +1,60 @@
-"use client";
+import { createClient } from "../lib/supabase/server";
 
-import { useState } from "react";
-import { createClient } from "../lib/supabase/client";
+type QuizRow = {
+  id: string;
+  title: string;
+  thumbnail_url: string | null;
+  quiz_questions: { count: number }[];
+};
 
-const questions = [
-  {
-    q: "რა არის აქცია?",
-    options: [
-      "კომპანიის ვალი",
-      "კომპანიის წილი",
-      "ბანკის დეპოზიტი",
-    ],
-    answer: 1,
-  },
-  {
-    q: "რას ნიშნავს ETF?",
-    options: [
-      "ერთი კომპანიის აქცია",
-      "ფონდი, რომელშიც ბევრი კომპანიაა",
-      "კრიპტოვალუტა",
-    ],
-    answer: 1,
-  },
-  {
-    q: "Buy & Hold რას ნიშნავს?",
-    options: [
-      "ყოველდღე ყიდვა-გაყიდვა",
-      "ყიდვა და დიდი ხნით შენახვა",
-      "მხოლოდ ოქროს ყიდვა",
-    ],
-    answer: 1,
-  },
-  {
-    q: "დივერსიფიკაცია რატომ კეთდება?",
-    options: [
-      "რომ ერთ კომპანიაზე არ იყოს ყველაფერი",
-      "რომ მეტი საკომისიო გადაიხადო",
-      "რომ მხოლოდ ერთი აქცია იყიდო",
-    ],
-    answer: 0,
-  },
-  {
-    q: "ვინ არის უორენ ბაფეტი?",
-    options: [
-      "კრიპტოს შემქმნელი",
-      "ცნობილი გრძელვადიანი ინვესტორი",
-      "საქართველოს ბანკის დამფუძნებელი",
-    ],
-    answer: 1,
-  },
-];
-
-export default function QuizPage() {
-  const [step, setStep] = useState(0);
-  const [score, setScore] = useState(0);
-  const [done, setDone] = useState(false);
-
-  function choose(index: number) {
-    const finalScore =
-      index === questions[step].answer ? score + 1 : score;
-
-    if (index === questions[step].answer) {
-      setScore(finalScore);
-    }
-
-    if (step + 1 === questions.length) {
-      setDone(true);
-      saveAttempt(finalScore);
-    } else {
-      setStep(step + 1);
-    }
-  }
-
-  async function saveAttempt(finalScore: number) {
-    const supabase = createClient();
-    const { data } = await supabase.auth.getUser();
-    if (!data.user) return;
-
-    await supabase.from("quiz_attempts").insert({
-      user_id: data.user.id,
-      score: finalScore,
-      total: questions.length,
-    });
-  }
-
-  if (done) {
-    return (
-      <main className="max-w-2xl mx-auto px-6 py-16 text-center">
-        <h1 className="text-3xl font-bold mb-4">შედეგი</h1>
-        <p className="text-xl text-purple-100">
-          {score} / {questions.length}
-        </p>
-        <button
-          className="mt-8 rounded-lg bg-white text-[#2d1b4e] px-5 py-2 font-medium"
-          onClick={() => {
-            setStep(0);
-            setScore(0);
-            setDone(false);
-          }}
-        >
-          თავიდან
-        </button>
-      </main>
-    );
-  }
-
-  const current = questions[step];
+export default async function QuizListPage() {
+  const supabase = await createClient();
+  const { data: quizzes } = await supabase
+    .from("quizzes")
+    .select("id, title, thumbnail_url, quiz_questions(count)")
+    .order("created_at", { ascending: false })
+    .returns<QuizRow[]>();
 
   return (
-    <main className="max-w-2xl mx-auto px-6 py-16">
-      <p className="text-sm text-purple-300 mb-2">
-        კითხვა {step + 1} / {questions.length}
-      </p>
-      <h1 className="text-2xl font-bold mb-8">{current.q}</h1>
-      <div className="space-y-3">
-        {current.options.map((option, index) => (
-          <button
-            key={option}
-            onClick={() => choose(index)}
-            className="w-full text-left rounded-xl border border-purple-800/70 bg-purple-950/40 px-4 py-3 hover:bg-purple-900/60"
-          >
-            {option}
-          </button>
-        ))}
+    <main className="max-w-5xl mx-auto px-6 py-16">
+      <h1 className="text-3xl font-bold mb-8">ქვიზები</h1>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+        {(quizzes || []).map((quiz) => {
+          const count = quiz.quiz_questions?.[0]?.count ?? 0;
+          return (
+            <a
+              key={quiz.id}
+              href={`/quiz/${quiz.id}`}
+              className="block overflow-hidden rounded-xl border border-purple-800/70 bg-purple-950/40 hover:bg-purple-900/50 transition-colors"
+            >
+              <div className="aspect-video bg-purple-900/60">
+                {quiz.thumbnail_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={quiz.thumbnail_url}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-purple-400 text-3xl">
+                    ?
+                  </div>
+                )}
+              </div>
+              <div className="p-4">
+                <p className="font-bold">{quiz.title}</p>
+                <p className="text-[0.8em] text-purple-300 mt-1">
+                  {count} კითხვა
+                </p>
+              </div>
+            </a>
+          );
+        })}
+
+        {(!quizzes || quizzes.length === 0) && (
+          <p className="text-purple-300">ჯერ ქვიზი არ დამატებულა.</p>
+        )}
       </div>
     </main>
   );
