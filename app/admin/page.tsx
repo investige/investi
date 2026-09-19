@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "../lib/supabase/server";
-import AdminPostsManager from "./AdminPostsManager";
+import AdminDashboard from "./AdminDashboard";
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -26,7 +26,7 @@ export default async function AdminPage() {
   return (
     <main className="max-w-3xl mx-auto px-6 py-16">
       <h1 className="text-3xl font-bold mb-8">ადმინის პანელი</h1>
-      <AdminPostsManager />
+      <AdminDashboard />
     </main>
   );
 }

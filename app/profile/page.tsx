@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "../lib/supabase/server";
 
 export default async function ProfilePage() {
@@ -88,9 +89,9 @@ export default async function ProfilePage() {
         ) : (
           <p className="text-purple-300">
             ჯერ არ გისცდია.{" "}
-            <a href="/quiz" className="underline hover:text-white">
+            <Link href="/quiz" className="underline hover:text-white">
               გაიარე ქვიზი
-            </a>
+            </Link>
           </p>
         )}
       </section>
