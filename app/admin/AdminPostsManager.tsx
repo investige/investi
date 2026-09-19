@@ -31,7 +31,9 @@ export default function AdminPostsManager() {
     const supabase = createClient();
     const { data } = await supabase
       .from("posts")
-      .select("id, title, body, category, thumbnail_url, author_id, created_at")
+      .select(
+        "id, title, body, category, thumbnail_url, content_blocks, author_id, created_at"
+      )
       .order("created_at", { ascending: false });
     const list = data || [];
     setPosts(list);
@@ -42,7 +44,9 @@ export default function AdminPostsManager() {
     let ignore = false;
     createClient()
       .from("posts")
-      .select("id, title, body, category, thumbnail_url, author_id, created_at")
+      .select(
+        "id, title, body, category, thumbnail_url, content_blocks, author_id, created_at"
+      )
       .order("created_at", { ascending: false })
       .then(async ({ data }) => {
         if (ignore) return;
