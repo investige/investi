@@ -55,7 +55,7 @@ export default function UsernameForm({
         ნაცვლად შენი მეილისა.
       </p>
       <input
-        className="w-full mb-3 rounded-lg px-3 py-2 bg-white text-black"
+        className="w-full mb-3 rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
       />
@@ -63,7 +63,7 @@ export default function UsernameForm({
         type="button"
         onClick={save}
         disabled={saving || username.trim() === saved}
-        className="rounded-lg bg-white text-[#2d1b4e] px-4 py-2 disabled:opacity-50"
+        className="rounded-lg bg-accent text-bg px-4 py-2 disabled:opacity-50"
       >
         შენახვა
       </button>

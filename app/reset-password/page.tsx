@@ -115,14 +115,14 @@ export default function ResetPasswordPage() {
     <main className="max-w-md mx-auto px-6 py-16">
       <h1 className="text-3xl font-bold mb-6">ახალი პაროლი</h1>
       <input
-        className="w-full mb-3 rounded-lg px-3 py-2 bg-white text-black"
+        className="w-full mb-3 rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700"
         placeholder="ახალი პაროლი"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
       <input
-        className="w-full mb-3 rounded-lg px-3 py-2 bg-white text-black"
+        className="w-full mb-3 rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700"
         placeholder="გაიმეორე ახალი პაროლი"
         type="password"
         value={confirm}
@@ -131,7 +131,7 @@ export default function ResetPasswordPage() {
       <button
         type="button"
         onClick={save}
-        className="mt-2 rounded-lg bg-white text-[#2d1b4e] px-4 py-2"
+        className="mt-2 rounded-lg bg-accent text-bg px-4 py-2"
       >
         შენახვა
       </button>

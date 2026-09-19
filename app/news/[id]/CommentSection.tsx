@@ -157,7 +157,7 @@ export default function CommentSection({
       {loggedIn ? (
         <div className="mb-6">
           <textarea
-            className="w-full mb-2 rounded-lg px-3 py-2 bg-white text-black min-h-24"
+            className="w-full mb-2 rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700 min-h-24"
             placeholder="დაწერე კომენტარი..."
             value={body}
             onChange={(e) => setBody(e.target.value)}
@@ -166,7 +166,7 @@ export default function CommentSection({
             type="button"
             onClick={postComment}
             disabled={posting}
-            className="rounded-lg bg-white text-[#2d1b4e] px-4 py-2 disabled:opacity-50"
+            className="rounded-lg bg-accent text-bg px-4 py-2 disabled:opacity-50"
           >
             კომენტარის დატოვება
           </button>

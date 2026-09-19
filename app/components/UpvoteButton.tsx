@@ -82,12 +82,12 @@ export default function UpvoteButton({
       className={
         "flex flex-col items-center justify-center rounded-lg border px-3 py-2 leading-none transition-colors " +
         (voted
-          ? "border-white bg-white text-[#2d1b4e]"
+          ? "border-accent bg-accent text-bg"
           : "border-purple-700 text-purple-200 hover:text-white hover:border-purple-400")
       }
     >
       <span className="text-lg">▲</span>
-      <span className="text-xs mt-1">{count}</span>
+      <span className="font-mono text-xs mt-1">{count}</span>
     </button>
   );
 }

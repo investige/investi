@@ -87,14 +87,14 @@ export default function ChangePasswordForm({
         </p>
       )}
       <input
-        className="w-full mb-3 rounded-lg px-3 py-2 bg-white text-black"
+        className="w-full mb-3 rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700"
         placeholder="ახალი პაროლი"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
       <input
-        className="w-full mb-3 rounded-lg px-3 py-2 bg-white text-black"
+        className="w-full mb-3 rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700"
         placeholder="გაიმეორე ახალი პაროლი"
         type="password"
         value={confirm}
@@ -104,7 +104,7 @@ export default function ChangePasswordForm({
         type="button"
         onClick={requestChange}
         disabled={sending}
-        className="rounded-lg bg-white text-[#2d1b4e] px-4 py-2 disabled:opacity-50"
+        className="rounded-lg bg-accent text-bg px-4 py-2 disabled:opacity-50"
       >
         პაროლის შეცვლა
       </button>

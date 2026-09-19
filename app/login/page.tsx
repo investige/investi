@@ -125,7 +125,7 @@ export default function LoginPage() {
       {mode !== "forgot" && <SocialLoginButtons />}
 
       <input
-        className="w-full mb-3 rounded-lg px-3 py-2 bg-white text-black"
+        className="w-full mb-3 rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700"
         placeholder="მეილი"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -133,7 +133,7 @@ export default function LoginPage() {
 
       {mode !== "forgot" && (
         <input
-          className="w-full mb-3 rounded-lg px-3 py-2 bg-white text-black"
+          className="w-full mb-3 rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700"
           placeholder="პაროლი"
           type="password"
           value={password}
@@ -143,7 +143,7 @@ export default function LoginPage() {
 
       {mode === "register" && (
         <input
-          className="w-full mb-3 rounded-lg px-3 py-2 bg-white text-black"
+          className="w-full mb-3 rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700"
           placeholder="პაროლი ხელახლა"
           type="password"
           value={confirm}
@@ -168,7 +168,7 @@ export default function LoginPage() {
         <button
           type="button"
           onClick={sendResetEmail}
-          className="mt-2 rounded-lg bg-white text-[#2d1b4e] px-4 py-2"
+          className="mt-2 rounded-lg bg-accent text-bg px-4 py-2"
         >
           ბმულის გამოგზავნა
         </button>
@@ -177,7 +177,7 @@ export default function LoginPage() {
           type="button"
           onClick={mode === "login" ? signIn : signUp}
           disabled={mode === "login" && lockedSeconds > 0}
-          className="mt-2 rounded-lg bg-white text-[#2d1b4e] px-4 py-2 disabled:opacity-50"
+          className="mt-2 rounded-lg bg-accent text-bg px-4 py-2 disabled:opacity-50"
         >
           {mode === "login" ? "შესვლა" : "რეგისტრაცია"}
         </button>

@@ -23,7 +23,7 @@ export default function Error({
       <button
         type="button"
         onClick={() => retry()}
-        className="rounded-lg bg-white text-[#2d1b4e] px-4 py-2"
+        className="rounded-lg bg-accent text-bg px-4 py-2"
       >
         თავიდან ცდა
       </button>

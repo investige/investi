@@ -42,18 +42,21 @@ export default function Header() {
   }
 
   return (
-    <header className="border-b border-purple-800/60">
+    <header className="sticky top-0 z-10 border-b border-purple-800 bg-purple-950/90 backdrop-blur">
       <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="/" className="font-bold text-lg tracking-wide">
+        <Link
+          href="/"
+          className="font-display font-semibold text-lg tracking-wide"
+        >
           ინვესტორი
-        </a>
+        </Link>
         <nav className="flex gap-6 text-sm text-purple-200 items-center">
-          <a href="/" className="hover:text-white">
+          <Link href="/" className="hover:text-white">
             მთავარი
-          </a>
-          <a href="/stocks" className="hover:text-white">
+          </Link>
+          <Link href="/stocks" className="hover:text-white">
             სტოკები
-          </a>
+          </Link>
           <Link href="/news" className="hover:text-white">
             სიახლეები
           </Link>
@@ -61,23 +64,26 @@ export default function Header() {
             იცი
           </Link>
           {isAdmin && (
-            <a href="/admin" className="hover:text-white">
+            <Link href="/admin" className="hover:text-white">
               ადმინი
-            </a>
+            </Link>
           )}
           {email ? (
             <>
-              <a href="/profile" className="hover:text-white">
+              <Link href="/profile" className="hover:text-white">
                 პროფილი
-              </a>
+              </Link>
               <button onClick={signOut} className="hover:text-white">
                 გასვლა
               </button>
             </>
           ) : (
-            <a href="/login" className="hover:text-white">
+            <Link
+              href="/login"
+              className="rounded-lg bg-accent text-bg px-4 py-1.5 font-medium hover:opacity-90"
+            >
               შესვლა
-            </a>
+            </Link>
           )}
         </nav>
       </div>

@@ -59,7 +59,7 @@ export default function PostBlockEditor({
         block.type === "text" ? (
           <div key={index} className="mb-3">
             <textarea
-              className="w-full rounded-lg px-3 py-2 bg-white text-black min-h-32"
+              className="w-full rounded-lg px-3 py-2 bg-purple-900 text-purple-100 border border-purple-700 min-h-32"
               placeholder="ტექსტი"
               value={block.text}
               onChange={(e) => updateText(index, e.target.value)}
