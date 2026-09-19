@@ -64,7 +64,7 @@ export default async function PostPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data: isAdmin }, { data: countsRaw }, { data: myVote }] =
+  const [{ data: isAdmin }, { data: countsRaw }, { data: myVote }, { data: authorProfile }] =
     await Promise.all([
       user ? supabase.rpc("is_admin") : Promise.resolve({ data: false }),
       supabase.rpc("get_post_vote_counts", { post_ids: [id] }),
@@ -75,6 +75,11 @@ export default async function PostPage({
             .eq("post_id", id)
             .maybeSingle()
         : Promise.resolve({ data: null }),
+      supabase
+        .from("profiles")
+        .select("username")
+        .eq("user_id", post.author_id)
+        .maybeSingle(),
     ]);
 
   const counts = (countsRaw || []) as { post_id: string; votes: number }[];
@@ -88,6 +93,7 @@ export default async function PostPage({
         voteCount={voteCount}
         voted={!!myVote}
         loggedIn={!!user}
+        authorUsername={authorProfile?.username}
       />
     </main>
   );

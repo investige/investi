@@ -15,6 +15,7 @@ export default function PostCard({
   voted,
   loggedIn,
   shareUrl,
+  authorUsername,
 }: {
   post: Post;
   canManage: boolean;
@@ -23,6 +24,7 @@ export default function PostCard({
   voted?: boolean;
   loggedIn?: boolean;
   shareUrl?: string;
+  authorUsername?: string;
 }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(post.title);
@@ -164,6 +166,12 @@ export default function PostCard({
           <h2 className="text-xl font-bold mb-2">{post.title}</h2>
           <p className="whitespace-pre-wrap text-purple-100">{post.body}</p>
         </>
+      )}
+
+      {authorUsername && (
+        <p className="mt-3 text-sm text-purple-300">
+          დაწერა: {authorUsername}
+        </p>
       )}
 
       {shareUrl && (
