@@ -3,12 +3,15 @@
 import { useEffect, useState } from "react";
 import { createClient } from "../lib/supabase/client";
 import { CATEGORIES, type Category, type Post } from "./types";
-import UpvoteButton from "../components/UpvoteButton";
+import PostCard from "./PostCard";
+import PostComposer from "./PostComposer";
 
 export default function NewsPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [filter, setFilter] = useState<Category | "ყველა">("ყველა");
   const [loggedIn, setLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [voted, setVoted] = useState<Set<string>>(new Set());
 
@@ -16,7 +19,7 @@ export default function NewsPage() {
     const supabase = createClient();
     let query = supabase
       .from("posts")
-      .select("id, title, body, category, created_at")
+      .select("id, title, body, category, thumbnail_url, author_id, created_at")
       .order("created_at", { ascending: false });
 
     if (activeFilter !== "ყველა") {
@@ -62,7 +65,14 @@ export default function NewsPage() {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setLoggedIn(!!data.user));
+    supabase.auth.getUser().then(async ({ data }) => {
+      setLoggedIn(!!data.user);
+      setUserId(data.user?.id ?? null);
+      if (data.user) {
+        const { data: adminCheck } = await supabase.rpc("is_admin");
+        setIsAdmin(!!adminCheck);
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -91,28 +101,28 @@ export default function NewsPage() {
         ))}
       </div>
 
+      {loggedIn ? (
+        <PostComposer heading="დაწერე პოსტი" onPublished={() => loadPosts(filter)} />
+      ) : (
+        <p className="mb-12 text-purple-200">
+          <a href="/login" className="underline hover:text-white">
+            შედი ანგარიშში
+          </a>{" "}
+          საკუთარი პოსტის დასაწერად.
+        </p>
+      )}
+
       <div className="space-y-6">
         {posts.map((post) => (
-          <article
+          <PostCard
             key={post.id}
-            className="relative rounded-xl border border-purple-800/70 p-5 pr-20"
-          >
-            <span className="inline-block mb-2 rounded-full bg-purple-950/60 px-3 py-1 text-xs text-purple-200">
-              {post.category}
-            </span>
-            <h2 className="text-xl font-bold mb-2">{post.title}</h2>
-            <p className="whitespace-pre-wrap text-purple-100">{post.body}</p>
-            <p className="mt-3 text-sm text-purple-300">ინვესტორი</p>
-            <div className="absolute top-5 right-5">
-              <UpvoteButton
-                kind="post"
-                targetId={post.id}
-                initialCount={counts[post.id] ?? 0}
-                initialVoted={voted.has(post.id)}
-                loggedIn={loggedIn}
-              />
-            </div>
-          </article>
+            post={post}
+            canManage={isAdmin || post.author_id === userId}
+            onChanged={() => loadPosts(filter)}
+            voteCount={counts[post.id] ?? 0}
+            voted={voted.has(post.id)}
+            loggedIn={loggedIn}
+          />
         ))}
         {posts.length === 0 && (
           <p className="text-purple-300">პოსტები ჯერ არ არის.</p>

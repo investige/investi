@@ -3,15 +3,22 @@
 import { useState } from "react";
 import { createClient } from "../lib/supabase/client";
 import { CATEGORIES, type Category, type Post } from "./types";
+import UpvoteButton from "../components/UpvoteButton";
 
 export default function PostCard({
   post,
-  isAdmin,
+  canManage,
   onChanged,
+  voteCount,
+  voted,
+  loggedIn,
 }: {
   post: Post;
-  isAdmin: boolean;
+  canManage: boolean;
   onChanged: () => void;
+  voteCount?: number;
+  voted?: boolean;
+  loggedIn?: boolean;
 }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(post.title);
@@ -94,12 +101,25 @@ export default function PostCard({
   }
 
   return (
-    <article className="rounded-xl border border-purple-800/70 p-5">
+    <article
+      className={
+        "relative rounded-xl border border-purple-800/70 p-5" +
+        (voteCount !== undefined ? " pr-20" : "")
+      }
+    >
+      {post.thumbnail_url && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={post.thumbnail_url}
+          alt=""
+          className="w-full h-40 object-cover rounded-lg mb-4"
+        />
+      )}
       <div className="flex items-start justify-between gap-3 mb-2">
         <span className="inline-block rounded-full bg-purple-950/60 px-3 py-1 text-xs text-purple-200">
           {post.category}
         </span>
-        {isAdmin && (
+        {canManage && (
           <div className="flex gap-3 text-sm text-purple-300">
             <button
               type="button"
@@ -120,7 +140,18 @@ export default function PostCard({
       </div>
       <h2 className="text-xl font-bold mb-2">{post.title}</h2>
       <p className="whitespace-pre-wrap text-purple-100">{post.body}</p>
-      <p className="mt-3 text-sm text-purple-300">ინვესტორი</p>
+
+      {voteCount !== undefined && (
+        <div className="absolute top-5 right-5">
+          <UpvoteButton
+            kind="post"
+            targetId={post.id}
+            initialCount={voteCount}
+            initialVoted={!!voted}
+            loggedIn={!!loggedIn}
+          />
+        </div>
+      )}
     </article>
   );
 }
