@@ -4,11 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "../lib/supabase/client";
 
-type Kind = "post" | "quiz";
+type Kind = "post" | "quiz" | "comment";
 
 const CONFIG: Record<Kind, { table: string; column: string }> = {
   post: { table: "post_votes", column: "post_id" },
   quiz: { table: "quiz_votes", column: "quiz_id" },
+  comment: { table: "comment_votes", column: "comment_id" },
 };
 
 export default function UpvoteButton({
