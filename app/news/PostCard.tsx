@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { createClient } from "../lib/supabase/client";
 import { CATEGORIES, type Category, type Post } from "./types";
 import UpvoteButton from "../components/UpvoteButton";
@@ -110,14 +111,24 @@ export default function PostCard({
         (voteCount !== undefined ? " pr-20" : "")
       }
     >
-      {post.thumbnail_url && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={post.thumbnail_url}
-          alt=""
-          className="w-full h-40 object-cover rounded-lg mb-4"
-        />
-      )}
+      {post.thumbnail_url &&
+        (shareUrl ? (
+          <Link href={shareUrl}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.thumbnail_url}
+              alt=""
+              className="w-full h-40 object-cover rounded-lg mb-4"
+            />
+          </Link>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={post.thumbnail_url}
+            alt=""
+            className="w-full h-40 object-cover rounded-lg mb-4"
+          />
+        ))}
       <div className="flex items-start justify-between gap-3 mb-2">
         <span className="inline-block rounded-full bg-purple-950/60 px-3 py-1 text-xs text-purple-200">
           {post.category}
@@ -141,8 +152,19 @@ export default function PostCard({
           </div>
         )}
       </div>
-      <h2 className="text-xl font-bold mb-2">{post.title}</h2>
-      <p className="whitespace-pre-wrap text-purple-100">{post.body}</p>
+      {shareUrl ? (
+        <Link href={shareUrl} className="block">
+          <h2 className="text-xl font-bold mb-2 hover:underline">
+            {post.title}
+          </h2>
+          <p className="whitespace-pre-wrap text-purple-100">{post.body}</p>
+        </Link>
+      ) : (
+        <>
+          <h2 className="text-xl font-bold mb-2">{post.title}</h2>
+          <p className="whitespace-pre-wrap text-purple-100">{post.body}</p>
+        </>
+      )}
 
       {shareUrl && (
         <div className="mt-4">
