@@ -17,9 +17,10 @@ export default function ShareButtons({
 
   function shareTo(platform: "facebook" | "linkedin") {
     const url = absoluteUrl();
+    const quote = `წაიკითხე სტატია: "${title}"`;
     const shareUrl =
       platform === "facebook"
-        ? `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
+        ? `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(quote)}`
         : `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
     window.open(shareUrl, "_blank", "noopener,noreferrer,width=600,height=500");
   }

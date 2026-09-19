@@ -13,6 +13,8 @@ async function getPost(id: string) {
   return post;
 }
 
+const SITE_URL = "https://investi.ge";
+
 export async function generateMetadata({
   params,
 }: {
@@ -22,9 +24,26 @@ export async function generateMetadata({
   const post = await getPost(id);
   if (!post) return {};
 
+  const shareTitle = `წაიკითხე სტატია: "${post.title}"`;
+  const description = post.body.slice(0, 160);
+  const url = `${SITE_URL}/news/${post.id}`;
+
   return {
     title: post.title,
-    description: post.body.slice(0, 160),
+    description,
+    openGraph: {
+      title: shareTitle,
+      description,
+      url,
+      type: "article",
+      images: post.thumbnail_url ? [{ url: post.thumbnail_url }] : undefined,
+    },
+    twitter: {
+      card: post.thumbnail_url ? "summary_large_image" : "summary",
+      title: shareTitle,
+      description,
+      images: post.thumbnail_url ? [post.thumbnail_url] : undefined,
+    },
   };
 }
 
