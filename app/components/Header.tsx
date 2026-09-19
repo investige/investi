@@ -5,16 +5,28 @@ import { createClient } from "../lib/supabase/client";
 
 export default function Header() {
   const [email, setEmail] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
 
+    async function checkAdmin(hasUser: boolean) {
+      if (!hasUser) {
+        setIsAdmin(false);
+        return;
+      }
+      const { data } = await supabase.rpc("is_admin");
+      setIsAdmin(!!data);
+    }
+
     supabase.auth.getUser().then(({ data }) => {
       setEmail(data.user?.email ?? null);
+      checkAdmin(!!data.user);
     });
 
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       setEmail(session?.user?.email ?? null);
+      checkAdmin(!!session?.user);
     });
 
     return () => {
@@ -47,6 +59,11 @@ export default function Header() {
           <a href="/quiz" className="hover:text-white">
             იცი
           </a>
+          {isAdmin && (
+            <a href="/admin" className="hover:text-white">
+              ადმინი
+            </a>
+          )}
           {email ? (
             <button onClick={signOut} className="hover:text-white">
               გასვლა
