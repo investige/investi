@@ -17,8 +17,10 @@ function takePendingPassword(): string {
 
 export default function ResetPasswordPage() {
   const [ready, setReady] = useState(false);
-  const [password, setPassword] = useState(() => takePendingPassword());
-  const [confirm, setConfirm] = useState(password);
+  const [pendingPassword] = useState(() => takePendingPassword());
+  const [autoConfirming, setAutoConfirming] = useState(!!pendingPassword);
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [message, setMessage] = useState("");
   const [done, setDone] = useState(false);
 
@@ -37,6 +39,22 @@ export default function ResetPasswordPage() {
       data.subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (!ready || !pendingPassword) return;
+
+    const supabase = createClient();
+    supabase.auth
+      .updateUser({ password: pendingPassword })
+      .then(({ error }) => {
+        if (error) {
+          setAutoConfirming(false);
+          setMessage(error.message);
+          return;
+        }
+        window.location.href = "/profile?password_changed=1";
+      });
+  }, [ready, pendingPassword]);
 
   async function save() {
     if (password.length < 6) {
@@ -59,17 +77,6 @@ export default function ResetPasswordPage() {
     setDone(true);
   }
 
-  if (done) {
-    return (
-      <main className="max-w-md mx-auto px-6 py-16 text-center">
-        <h1 className="text-2xl font-bold mb-4">პაროლი შეიცვალა</h1>
-        <a href="/login" className="underline hover:text-white">
-          შედი ახალი პაროლით
-        </a>
-      </main>
-    );
-  }
-
   if (!ready) {
     return (
       <main className="max-w-md mx-auto px-6 py-16 text-center">
@@ -80,6 +87,26 @@ export default function ResetPasswordPage() {
           </a>
           .
         </p>
+      </main>
+    );
+  }
+
+  if (autoConfirming) {
+    return (
+      <main className="max-w-md mx-auto px-6 py-16 text-center">
+        <p className="text-purple-200">პაროლის ცვლილება მტკიცდება...</p>
+        {message && <p className="mt-4 text-purple-200">{message}</p>}
+      </main>
+    );
+  }
+
+  if (done) {
+    return (
+      <main className="max-w-md mx-auto px-6 py-16 text-center">
+        <h1 className="text-2xl font-bold mb-4">პაროლი შეიცვალა</h1>
+        <a href="/login" className="underline hover:text-white">
+          შედი ახალი პაროლით
+        </a>
       </main>
     );
   }

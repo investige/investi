@@ -3,7 +3,12 @@ import Link from "next/link";
 import { createClient } from "../lib/supabase/server";
 import ChangePasswordForm from "./ChangePasswordForm";
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ password_changed?: string }>;
+}) {
+  const { password_changed } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -111,7 +116,10 @@ export default async function ProfilePage() {
 
       {user.email && (
         <div className="mt-10">
-          <ChangePasswordForm email={user.email} />
+          <ChangePasswordForm
+            email={user.email}
+            justChanged={password_changed === "1"}
+          />
         </div>
       )}
     </main>
