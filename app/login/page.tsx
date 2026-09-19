@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "../lib/supabase/client";
+import SocialLoginButtons from "../components/SocialLoginButtons";
 import {
   getRemainingLockSeconds,
   recordFailedAttempt,
@@ -120,6 +121,8 @@ export default function LoginPage() {
         {mode === "register" && "რეგისტრაცია"}
         {mode === "forgot" && "პაროლის აღდგენა"}
       </h1>
+
+      {mode !== "forgot" && <SocialLoginButtons />}
 
       <input
         className="w-full mb-3 rounded-lg px-3 py-2 bg-white text-black"
