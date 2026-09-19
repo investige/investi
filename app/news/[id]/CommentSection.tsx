@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "../../lib/supabase/client";
+import UpvoteButton from "../../components/UpvoteButton";
 
 type Comment = {
   id: string;
@@ -9,6 +10,62 @@ type Comment = {
   body: string;
   created_at: string;
 };
+
+async function fetchCommentsData(postId: string, userId?: string) {
+  const supabase = createClient();
+
+  const { data } = await supabase
+    .from("comments")
+    .select("id, user_id, body, created_at")
+    .eq("post_id", postId)
+    .order("created_at", { ascending: true });
+
+  const list = data || [];
+  const commentIds = list.map((c) => c.id);
+  const authorIds = Array.from(new Set(list.map((c) => c.user_id)));
+
+  const [{ data: profiles }, { data: countRows }, { data: myVotes }] =
+    await Promise.all([
+      authorIds.length > 0
+        ? supabase
+            .from("profiles")
+            .select("user_id, username")
+            .in("user_id", authorIds)
+        : Promise.resolve({
+            data: [] as { user_id: string; username: string }[],
+          }),
+      commentIds.length > 0
+        ? supabase.rpc("get_comment_vote_counts", { comment_ids: commentIds })
+        : Promise.resolve({
+            data: [] as { comment_id: string; votes: number }[],
+          }),
+      userId && commentIds.length > 0
+        ? supabase
+            .from("comment_votes")
+            .select("comment_id")
+            .in("comment_id", commentIds)
+        : Promise.resolve({ data: [] as { comment_id: string }[] }),
+    ]);
+
+  return {
+    comments: list,
+    usernames: Object.fromEntries(
+      (profiles || []).map((p: { user_id: string; username: string }) => [
+        p.user_id,
+        p.username,
+      ])
+    ) as Record<string, string>,
+    counts: Object.fromEntries(
+      (countRows || []).map((c: { comment_id: string; votes: number }) => [
+        c.comment_id,
+        c.votes,
+      ])
+    ) as Record<string, number>,
+    voted: new Set(
+      (myVotes || []).map((v: { comment_id: string }) => v.comment_id)
+    ),
+  };
+}
 
 export default function CommentSection({
   postId,
@@ -23,76 +80,33 @@ export default function CommentSection({
 }) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [usernames, setUsernames] = useState<Record<string, string>>({});
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [voted, setVoted] = useState<Set<string>>(new Set());
   const [body, setBody] = useState("");
   const [message, setMessage] = useState("");
   const [posting, setPosting] = useState(false);
 
-  async function loadComments() {
-    const supabase = createClient();
-    const { data } = await supabase
-      .from("comments")
-      .select("id, user_id, body, created_at")
-      .eq("post_id", postId)
-      .order("created_at", { ascending: true });
-
-    const list = data || [];
-    setComments(list);
-
-    const userIds = Array.from(new Set(list.map((c) => c.user_id)));
-    if (userIds.length === 0) return;
-
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("user_id, username")
-      .in("user_id", userIds);
-    setUsernames(
-      Object.fromEntries(
-        (profiles || []).map((p: { user_id: string; username: string }) => [
-          p.user_id,
-          p.username,
-        ])
-      )
-    );
+  async function refresh() {
+    const result = await fetchCommentsData(postId, currentUserId);
+    setComments(result.comments);
+    setUsernames(result.usernames);
+    setCounts(result.counts);
+    setVoted(result.voted);
   }
 
   useEffect(() => {
     let ignore = false;
-    const supabase = createClient();
-
-    supabase
-      .from("comments")
-      .select("id, user_id, body, created_at")
-      .eq("post_id", postId)
-      .order("created_at", { ascending: true })
-      .then(async ({ data }) => {
-        if (ignore) return;
-        const list = data || [];
-        setComments(list);
-
-        const userIds = Array.from(new Set(list.map((c) => c.user_id)));
-        if (userIds.length === 0) return;
-
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("user_id, username")
-          .in("user_id", userIds);
-        if (ignore) return;
-        setUsernames(
-          Object.fromEntries(
-            (profiles || []).map(
-              (p: { user_id: string; username: string }) => [
-                p.user_id,
-                p.username,
-              ]
-            )
-          )
-        );
-      });
-
+    fetchCommentsData(postId, currentUserId).then((result) => {
+      if (ignore) return;
+      setComments(result.comments);
+      setUsernames(result.usernames);
+      setCounts(result.counts);
+      setVoted(result.voted);
+    });
     return () => {
       ignore = true;
     };
-  }, [postId]);
+  }, [postId, currentUserId]);
 
   async function postComment() {
     if (!body.trim()) {
@@ -124,14 +138,14 @@ export default function CommentSection({
     }
 
     setBody("");
-    loadComments();
+    refresh();
   }
 
   async function removeComment(id: string) {
     if (!window.confirm("წავშალო ეს კომენტარი?")) return;
     const supabase = createClient();
     await supabase.from("comments").delete().eq("id", id);
-    loadComments();
+    refresh();
   }
 
   return (
@@ -171,25 +185,34 @@ export default function CommentSection({
         {comments.map((comment) => (
           <div
             key={comment.id}
-            className="rounded-lg border border-purple-800/60 p-4"
+            className="flex items-start justify-between gap-3 rounded-lg border border-purple-800/60 p-4"
           >
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-bold text-purple-200">
-                {usernames[comment.user_id] || "..."}
-              </span>
-              {(isAdmin || comment.user_id === currentUserId) && (
-                <button
-                  type="button"
-                  onClick={() => removeComment(comment.id)}
-                  className="text-xs text-purple-400 hover:text-white"
-                >
-                  წაშლა
-                </button>
-              )}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-bold text-purple-200">
+                  {usernames[comment.user_id] || "..."}
+                </span>
+                {(isAdmin || comment.user_id === currentUserId) && (
+                  <button
+                    type="button"
+                    onClick={() => removeComment(comment.id)}
+                    className="text-xs text-purple-400 hover:text-white"
+                  >
+                    წაშლა
+                  </button>
+                )}
+              </div>
+              <p className="whitespace-pre-wrap text-purple-100">
+                {comment.body}
+              </p>
             </div>
-            <p className="whitespace-pre-wrap text-purple-100">
-              {comment.body}
-            </p>
+            <UpvoteButton
+              kind="comment"
+              targetId={comment.id}
+              initialCount={counts[comment.id] ?? 0}
+              initialVoted={voted.has(comment.id)}
+              loggedIn={loggedIn}
+            />
           </div>
         ))}
         {comments.length === 0 && (
