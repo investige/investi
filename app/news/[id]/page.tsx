@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "../../lib/supabase/server";
 import PostView from "./PostView";
+import CommentSection from "./CommentSection";
 
 async function getPost(id: string) {
   const supabase = await createClient();
@@ -94,6 +95,12 @@ export default async function PostPage({
         voted={!!myVote}
         loggedIn={!!user}
         authorUsername={authorProfile?.username}
+      />
+      <CommentSection
+        postId={post.id}
+        loggedIn={!!user}
+        currentUserId={user?.id}
+        isAdmin={!!isAdmin}
       />
     </main>
   );
